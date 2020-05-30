@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body{
+			font-family: Arial, Helvetica, sans-serif;
+			overflow-x: auto;
+			overflow-y: auto;
+			white-space: nowrap;
+		}
+		
+		h1	{
+			padding-left: 20px;
+			text-decoration: underline;
+		}
+
+		.back-btn {
+			position: absolute;
+			margin: 15px;
+			padding: 15px 30px;
+			right: 0px;
+			top: 0px;
+			width: 150px;
+
+			border: 5px solid black;
+			border-radius: 10px;
+			box-sizing: border-box;
+
+			font-size: 150%;
+			font-weight: bold;
+		}
+
+		.column-div{
+			vertical-align: top;
+			display: inline-block;
+			width: 20%;
+			height: 100%;
+			white-space: normal;
+		}
+
+		#done{
+			position: sticky;
+			right: 0;
+			background-color: #efefef;
+			margin-top: 5px;
+			padding: 0px 20px 10px 20px;
+			height: 75vh;
+			border: 3px solid black;
+			overflow-y: scroll;
+		}
+
+		.step {
+			margin: 15px;
+			margin-left: 0px;
+			border: 6px solid black;
+			padding-left: 10px;
+			box-sizing: border-box;
+			display: block;
+		}
+
+		.step p{
+			margin-top: 10px;
+			margin-bottom: 10px;
+			font-size: 120%;
+		}
+
+		.step span.big {
+			font-weight: bold;
+			font-size: 120%;
+		}
+
+		.ready-btn {
+			margin-top: -10px;
+			padding: 12px;
+			width: 200px;
+			font-weight: bold;
+			font-size: 150%;
+			border: 4px solid black;
+			border-radius: 10px;
+		}
+
+		.return-btn {
+			margin-top: -10px;
+			padding: 12px;
+			width: 300px;
+			font-weight: bold;
+			font-size: 150%;
+			border: 4px solid black;
+			border-radius: 10px;
+		}
+
+		.priority {
+			font-size: 120%;
+			font-weight: bold;
+			color: red;
+			border: 2px solid black;
+			padding: 3px;
+		}
+
+		.back-btn:hover, .ready-btn:hover, .return-btn:hover{
+            background-color: grey;
+        }
+
+        .back-btn:active, .ready-btn:active, .return-btn:active{
+            background-color: #5f5f5f;
+        }
+	</style>
+</head>
+
+<body>
+	<div class="top-panel">
+		<h1>Очередь приготовления</h1>
+		<button class="back-btn" onClick="location.href='{% url 'queryapp:workpanel' %}'">Назад</button>
+	</div>
+	{% if csplaces %}
+		{% for place in csplaces %}
+			<div class="column-div">
+				<h2>{{ place.title }}</h2>
+				{% if inprogress_steps %}
+					{% for step in inprogress_steps %}
+						{% if step.cookstep.cookplace == place %}
+							<div class="step">
+								<p><span class="big">Заказ №{{ step.orderpos.order.id }}</span></p>
+								<p><span class="big">Блюдо:</span> <b>{{ step.orderpos.dish.title }}</b></p>
+								<p><span class="big">Шаг №{{ step.cookstep.position }}:</span>  <b>{{ step.cookstep.desc }}</b></p>
+								<p><span class="big">Порции:</span>  <b>x{{ step.orderpos.quantity }}</b></p>
+								<p><span class="big">Приоритет:</span>  <span class="priority">{{ forloop.counter }}</span></p>
+								{% if step.orderpos.order.delay > zero_duration %}
+									<p><span class="big">Задержка:</span>  <b>{{ step.orderpos.order.delay }}</b></p>
+								{% endif %}
+							</div>
+							<form method="POST" action=''>
+								{% csrf_token %}
+							    <input type="hidden" name="ready" value="{{ step.id }}">
+							    <button type="submit" class="ready-btn">Готово</button>
+							</form>
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+			</div>
+		{% endfor %}
+	{% endif %}
+	<div id="done" class="column-div">
+		<h2>Выполнено:</h2>
+		{% if finished_steps %}
+			{% for step in finished_steps %}
+				<div class="step">
+					<p><span class="big">Заказ №{{ step.orderpos.order.id }}</span></p>
+					<p><span class="big">Блюдо:</span> <b>{{ step.orderpos.dish.title }}</b></p>
+					<p><span class="big">Шаг №{{ step.cookstep.position }}:</span>  <b>{{ step.cookstep.desc }}</b></p>
+					<p><span class="big">Порции:</span>  <b>x{{ step.orderpos.quantity }}</b></p>
+				</div>
+				<form method="POST" action=''>
+					{% csrf_token %}
+				    <input type="hidden" name="return" value="{{ step.id }}">
+				    <button type="submit" class="ready-btn">Вернуть в очередь</button>
+				</form>
+			{% endfor %}
+		{% endif %}
+	</div>
+</body>
+
+</html>

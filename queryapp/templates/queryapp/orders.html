@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body{
+			font-family: Arial, Helvetica, sans-serif;
+		}
+		
+		h1	{
+			padding-left: 20px;
+			text-decoration: underline;
+		}
+
+        #main {
+            width: 50%;
+            float: left;
+        }
+
+        #main h2 {
+            padding-left: 50px;
+        }
+
+		.back-btn {
+			position: absolute;
+            margin: 15px;
+            padding: 15px 30px;
+            right: 0px;
+            top: 0px;
+            width: 150px;
+
+            border: 5px solid black;
+            border-radius: 10px;
+            box-sizing: border-box;
+
+            font-size: 150%;
+            font-weight: bold;
+		}
+
+		.card {
+  			background-color: white;
+  			padding: 5px;
+  			margin-top: 20px;
+		}
+
+        ol .order {
+            padding: 0px;
+            list-style-position: inside;
+            list-style: none;
+
+            width: 400px;
+            margin: 10px;
+            padding: 10px;
+
+            border: 5px solid black;
+            border-radius: 10px;
+
+            overflow: auto;
+
+            background-color: #efefef;
+        }
+
+        .opener {
+            display: block;
+            font-size: 170%;
+            font-weight: bold;
+        }
+
+        .closer {
+            font-size: 170%;
+            font-weight: bold;
+        }
+
+        ol .items {
+            padding-left: 25px;
+            border-top: 3px dashed black;
+        }
+
+        ol .items li {
+            margin-top: 10px;
+            font-size: 150%;
+            font-weight: bold;
+        }
+
+    	.menu ol, 
+    	.menu input, 
+    	.menu .closer, 
+    	.menu input:checked ~ .opener{
+    	    display:none;
+    	}
+    	.menu input:checked ~ ol,
+    	.menu input:checked ~ .closer{
+    	    display:block;
+    	}
+
+        .finished {
+            color: green;
+        }
+
+        .unfinished {
+            color: red;
+        }
+
+        .back-btn:hover, .order:hover {
+            background-color: grey;
+        }
+
+        .back-btn:active, .order:active {
+            background-color: #5f5f5f;
+        }
+	</style>
+</head>
+
+<body>
+	<div class="top-panel">
+		<h1>Очередь заказов</h1>
+		<button class="back-btn" onClick="location.href='{% url 'queryapp:workpanel' %}'">Назад</button>
+	</div>
+	<div id="main">
+        <h2>Активные заказы</h2>
+		<ol class="menu">
+            {% if active_orders_list %}
+                {% for order in active_orders_list %}
+                    <li class="order unfinished">
+                        <input type="radio" name="menuopt" id="drop{{ order.id }}" />
+                        <label class="opener" for="drop{{ order.id }}">Заказ №{{ order.id }}</label>
+                        <label class="closer" for="dropclose">Заказ №{{ order.id }}</label>
+                        <ol class="items">
+                            {% for position in orderpositions_list %}
+                                {% if position.order == order %}
+                                    {% if position.finished == True %}
+                                        <li class="finished">{{ position.dish.title }} x{{ position.quantity }}</li>
+                                    {% else %}
+                                        <li class="unfinished">{{ position.dish.title }} x{{ position.quantity }}</li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </li>
+                {% endfor %}
+            {% endif %}
+    	</ol>
+	</div>
+    <div id="main">
+        <h2>Завершенные заказы</h2>
+        <ol class="menu">
+            {% if finished_orders_list %}
+                {% for order in finished_orders_list %}
+                    <li class="order finished">
+                        <input type="radio" name="menuopt" id="drop{{ order.id }}" />
+                        <label class="opener" for="drop{{ order.id }}">Заказ №{{ order.id }}</label>
+                        <label class="closer" for="dropclose">Заказ №{{ order.id }}</label>
+                        <ol class="items">
+                            {% for position in orderpositions_list %}
+                                {% if position.order == order %}
+                                    {% if position.finished == True %}
+                                        <li class="finished">{{ position.dish.title }} x{{ position.quantity }}</li>
+                                    {% else %}
+                                        <li class="unfinished">{{ position.dish.title }} x{{ position.quantity }}</li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ol>
+    </div>
+
+</body>
+
+</html>

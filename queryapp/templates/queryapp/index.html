@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		html, body {
+			height:100%;
+  			width:100%;
+  			margin:0;
+		}
+
+		.choice-btn{
+			height: 400px;
+			width: 400px;
+			padding: 50px;
+			box-sizing: border-box;
+			border: 10px solid black;
+			border-radius: 10%;
+			margin: 10px;
+			margin-top: 300px;
+
+			font-size: 200%;
+			font-weight: bold;
+
+   			text-align: center;
+   			vertical-align: middle;
+		}
+
+		.choice-btn:hover {
+			background-color: grey;
+		}
+
+		.choice-btn:active {
+			background-color: #5f5f5f;
+		}
+
+		.wrapper {
+		    text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		{% if request.user.is_authenticated %}
+			<button class="choice-btn" onClick="location.href='{% url 'queryapp:workpanel' %}'">Панель<br>работника</button>
+		{% else %}
+			<button class="choice-btn" onClick="location.href='{% url 'queryapp:login' %}'">Панель<br>работника</button>
+		{% endif %}
+		<button class="choice-btn" onClick="location.href='{% url 'admin:index' %}'">Панель<br>администратора</button>
+	</div>
+</body>
+
+</html>
